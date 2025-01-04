@@ -2,6 +2,7 @@ import pygame
 import cons
 from character import Character
 from weapon import Bullet
+from texts import DamageText
 import os
 
 # Funciones
@@ -24,6 +25,11 @@ pygame.init()
 pygame.display.set_caption('My First Game')
 screen = pygame.display.set_mode((cons.WIDTH, cons.HEIGHT))
 
+font = pygame.font.Font('assets//fonts//ThaleahFat.ttf', 25)
+
+group_damage_text = pygame.sprite.Group()
+
+
 # Configurar jugador
 animations = []
 for i in range(1, 11):
@@ -31,7 +37,7 @@ for i in range(1, 11):
     img = scale_img(img, cons.SCALE_CHAR)
     animations.append(img)
 
-player = Character(50, 50, animations)
+player = Character(50, 50, animations, 100)
 
 # Configurar enemigos
 directory_enemies = 'assets//images//characters//enemies'
@@ -48,8 +54,8 @@ for enemy in type_enemies:
         list_temp.append(img_enemy)
     animations_enemies.append(list_temp)
 
-Bird = Character(400, 300, animations_enemies[0])
-Dog = Character(200, 300, animations_enemies[1])
+Bird = Character(400, 300, animations_enemies[0], 100)
+Dog = Character(200, 300, animations_enemies[1], 100)
 
 list_enemies = []
 list_enemies.append(Bird)
@@ -84,12 +90,21 @@ while running:
     # Dibujar enemigos
     for enemy in list_enemies:
         enemy.draw(screen)
+    
+    for enemy in list_enemies:
         enemy.update()
+        #*print(enemy.energy)
 
     # Dibujar balas
     for bullet in group_bullets:
         bullet.draw(screen)
-        bullet.update()
+        damage, pos_damage = bullet.update(list_enemies)
+        if damage:
+            damage_text = DamageText(pos_damage.centerx, pos_damage.centery, str(damage), font, cons.COLOR_GREEN)
+            group_damage_text.add(damage_text)
+    
+    group_damage_text.update()
+    group_damage_text.draw(screen)
 
     # Movimiento del jugador
     delta_x = 0

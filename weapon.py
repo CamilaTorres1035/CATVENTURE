@@ -1,9 +1,7 @@
 import pygame
 import cons
 import math
-
-import pygame
-import math
+import random
 
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, image, x, y, target_x, target_y):
@@ -25,7 +23,9 @@ class Bullet(pygame.sprite.Sprite):
     def draw(self, screen):
         screen.blit(self.image, self.rect.topleft)
 
-    def update(self):
+    def update(self, list_enemies):
+        damage = 0
+        pos_damage = None
         # Mover bala
         self.rect.x += self.delta_x
         self.rect.y += self.delta_y
@@ -34,3 +34,14 @@ class Bullet(pygame.sprite.Sprite):
         if (self.rect.right < 0 or self.rect.left > cons.WIDTH or 
             self.rect.bottom < 0 or self.rect.top > cons.HEIGHT):
             self.kill()
+        
+        # Verificar colisión con enemigos
+        for enemy in list_enemies:
+            if enemy.shape.colliderect(self.rect):
+                damage = 15 + random.randint(-7, 7)
+                pos_damage = enemy.shape
+                enemy.energy = enemy.energy - damage
+                self.kill()
+                break
+        
+        return damage, pos_damage

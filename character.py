@@ -2,7 +2,9 @@ import pygame
 import cons
 
 class Character():
-    def __init__(self, x, y, animations):
+    def __init__(self, x, y, animations, energy):
+        self.energy = energy
+        self.alive = True
         self.flip = False
         self.animations = animations
         # image of actual animation
@@ -19,8 +21,13 @@ class Character():
         #*pygame.draw.rect(screen, cons.COLOR_CHARACTER, self.shape, width=1)
     
     def update(self):
+        # Comprobar si el personaje sigue vivo
+        if self.energy <= 0:
+            self.energy = 0
+            self.alive = False
+        
         # time of animation
-        cooldown_animation = 80
+        cooldown_animation = 100
         self.image = self.animations[self.frame_index]
         if pygame.time.get_ticks() - self.update_time >= cooldown_animation:
             self.frame_index = self.frame_index + 1
