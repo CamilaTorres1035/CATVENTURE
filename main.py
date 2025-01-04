@@ -29,10 +29,6 @@ player = Character(50, 50, animations)
 image_bullet = pygame.image.load(f'assets//images//weapons//bullet.png')
 image_bullet = scale_img(image_bullet, cons.SCALE_BULLET)
 
-image_gun = pygame.image.load(f'assets//images//weapons//gun.png')
-image_gun = scale_img(image_gun, cons.SCALE_WEPON)
-gun = Weapon(image_gun, image_bullet)
-
 # Create a group of sprites (gestion balas)
 group_bullets = pygame.sprite.Group()
 
@@ -59,15 +55,10 @@ while running:
     # actualiza el estado del jugador
     player.update()
     
-    # Mostrar el arma 
-    gun.draw(screen)
-    
     # Mostrar balas
     for bullet in group_bullets:
         bullet.draw(screen)
 
-    # actualiza el estado del arma (balas)
-    bullet = gun.update(player)
     if bullet:
         group_bullets.add(bullet)
     
