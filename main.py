@@ -1,12 +1,13 @@
 import pygame
 import cons
 from character import Character
-from weapon import Weapon
+from weapon import Bullet
 
-# Initialize the game
+
+# Inicializar el juego
 pygame.init()
 
-# Set up the screen
+# Configuración de pantalla
 pygame.display.set_caption('My First Game')
 screen = pygame.display.set_mode((cons.WIDTH, cons.HEIGHT))
 
@@ -16,77 +17,66 @@ def scale_img(image, scale):
     image_scaled = pygame.transform.scale(image, (w*scale, h*scale))
     return image_scaled
 
-# Set player
+# Configurar jugador
 animations = []
-for i in range(1,11):
+for i in range(1, 11):
     img = pygame.image.load(f'assets//images//characters//Cat//Cat-{i}.png')
     img = scale_img(img, cons.SCALE_CHAR)
     animations.append(img)
 
 player = Character(50, 50, animations)
 
-# Set weapon
+# Configurar imagen de bala
 image_bullet = pygame.image.load(f'assets//images//weapons//bullet.png')
 image_bullet = scale_img(image_bullet, cons.SCALE_BULLET)
 
-# Create a group of sprites (gestion balas)
+# Grupo de balas
 group_bullets = pygame.sprite.Group()
 
-# Set clock (for the control of the frame rate)
+# Control de frame rate
 clock = pygame.time.Clock()
 
-# Set player movements
+# Movimiento del jugador
 move_right = False
 move_left = False
 move_up = False
 move_down = False
 
-# Set Loop
 running = True
 
 while running:
-    # Control del frame rate
     clock.tick(cons.FPS)
-    
     screen.fill(cons.COLOR_BG)
-    
-    # Mostrar el jugador
+
+    # Dibujar jugador
     player.draw(screen)
-    # actualiza el estado del jugador
     player.update()
-    
-    # Mostrar balas
+
+    # Dibujar balas
     for bullet in group_bullets:
         bullet.draw(screen)
-
-    if bullet:
-        group_bullets.add(bullet)
-    
-    for bullet in group_bullets:
         bullet.update()
-    
-    # Calcular el moviviento del jugador
+
+    # Movimiento del jugador
     delta_x = 0
     delta_y = 0
-    
-    if move_right == True:
+
+    if move_right:
         delta_x = cons.SPEED
-    if move_left == True:
+    if move_left:
         delta_x = -cons.SPEED
-    if move_up == True:
+    if move_up:
         delta_y = -cons.SPEED
-    if move_down == True:
+    if move_down:
         delta_y = cons.SPEED
-        
-    # Mover al jugador
+
     player.movement(delta_x, delta_y)
-    
+
     for event in pygame.event.get():
-        # Cerrar el juego
         if event.type == pygame.QUIT:
             running = False
-            
-        # Reconocer al presionar una tecla
+
+        # Detectar teclas para movimiento
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
                 move_left = True
@@ -96,8 +86,7 @@ while running:
                 move_up = True
             if event.key == pygame.K_DOWN:
                 move_down = True
-                
-        # Reconocer al soltar una tecla
+
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT:
                 move_left = False
@@ -107,7 +96,13 @@ while running:
                 move_up = False
             if event.key == pygame.K_DOWN:
                 move_down = False
-    
+        
+        # Disparar con el clic del mouse
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            bullet = Bullet(image_bullet, player.shape.centerx, player.shape.centery, mouse_x, mouse_y)
+            group_bullets.add(bullet)
+
     pygame.display.update()
 
 pygame.quit()
