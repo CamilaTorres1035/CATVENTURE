@@ -11,12 +11,12 @@ class Bullet(pygame.sprite.Sprite):
         self.rect.center = (x, y)
         self.speed = cons.SPEED_BULLET
         
-        # Calcular ángulo hacia el cursor
+        # Calculate angle towards the cursor
         angle = math.atan2(target_y - y, target_x - x)
         self.delta_x = math.cos(angle) * self.speed
         self.delta_y = math.sin(angle) * self.speed
         
-        # Rotar la imagen de la bala
+        # Rotate the bullet image
         self.angle = math.degrees(-angle)
         self.image = pygame.transform.rotate(self.image_origin, self.angle)
 
@@ -26,16 +26,16 @@ class Bullet(pygame.sprite.Sprite):
     def update(self, list_enemies):
         damage = 0
         pos_damage = None
-        # Mover bala
+        # Move bullet
         self.rect.x += self.delta_x
         self.rect.y += self.delta_y
         
-        # Eliminar balas fuera de pantalla
+        # Remove bullets off-screen
         if (self.rect.right < 0 or self.rect.left > cons.WIDTH or 
             self.rect.bottom < 0 or self.rect.top > cons.HEIGHT):
             self.kill()
         
-        # Verificar colisión con enemigos
+        # Check collision with enemies
         for enemy in list_enemies:
             if enemy.shape.colliderect(self.rect):
                 damage = 15 + random.randint(-7, 7)

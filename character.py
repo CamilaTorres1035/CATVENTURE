@@ -21,7 +21,7 @@ class Character():
         #*pygame.draw.rect(screen, cons.COLOR_CHARACTER, self.shape, width=1)
     
     def update(self):
-        # Comprobar si el personaje sigue vivo
+        # Check if the character is still alive
         if self.energy <= 0:
             self.energy = 0
             self.alive = False

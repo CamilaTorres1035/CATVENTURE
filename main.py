@@ -5,7 +5,7 @@ from weapon import Bullet
 from texts import DamageText
 import os
 
-# Funciones
+# Functions
 def scale_img(image, scale):
     w = image.get_width()
     h = image.get_height()
@@ -18,19 +18,38 @@ def count_elements(directory):
 def list_elements(directory):
     return os.listdir(directory)
 
-# Inicializar el juego
+# Initialize the game
 pygame.init()
 
-# Configuración de pantalla
+# Screen configuration
 pygame.display.set_caption('My First Game')
 screen = pygame.display.set_mode((cons.WIDTH, cons.HEIGHT))
 
+# Status Images
+heart_full = pygame.image.load('assets//images//items//Heart//Heart-1.PNG')
+heart_full = scale_img(heart_full, cons.SCALE_HEART)
+heart_half = pygame.image.load('assets//images//items//Heart//Heart-2.PNG')
+heart_half = scale_img(heart_half, cons.SCALE_HEART)
+heart_empty = pygame.image.load('assets//images//items//Heart//Heart-3.PNG')
+heart_empty = scale_img(heart_empty, cons.SCALE_HEART)
+
+# Text
 font = pygame.font.Font('assets//fonts//ThaleahFat.ttf', 25)
 
 group_damage_text = pygame.sprite.Group()
 
+# Configure player
+def life_player():
+    h_half_drawn = False
+    for i in range(5):
+        if player.energy >= ((i+1)*20):
+            screen.blit(heart_full, (5+i*50, 5))
+        elif player.energy % 20 > 0 and h_half_drawn == False:
+            h_half_drawn = True
+            screen.blit(heart_half, (5+i*50, 5))
+        else:
+            screen.blit(heart_empty, (5+i*50, 5))
 
-# Configurar jugador
 animations = []
 for i in range(1, 11):
     img = pygame.image.load(f'assets//images//characters//Cat//Cat-{i}.png')
@@ -39,7 +58,7 @@ for i in range(1, 11):
 
 player = Character(50, 50, animations, 100)
 
-# Configurar enemigos
+# Configure enemies
 directory_enemies = 'assets//images//characters//enemies'
 type_enemies = list_elements(directory_enemies)
 
@@ -61,17 +80,17 @@ list_enemies = []
 list_enemies.append(Bird)
 list_enemies.append(Dog)
 
-# Configurar imagen de bala
+# Configure bullet image
 image_bullet = pygame.image.load('assets//images//weapons//bullet.png')
 image_bullet = scale_img(image_bullet, cons.SCALE_BULLET)
 
-# Grupo de balas
+# Bullet group
 group_bullets = pygame.sprite.Group()
 
-# Control de frame rate
+# Frame rate control
 clock = pygame.time.Clock()
 
-# Movimiento del jugador
+# Player movement
 move_right = False
 move_left = False
 move_up = False
@@ -83,11 +102,11 @@ while running:
     clock.tick(cons.FPS)
     screen.fill(cons.COLOR_BG)
 
-    # Dibujar jugador
+    # Draw player
     player.draw(screen)
     player.update()
     
-    # Dibujar enemigos
+    # Draw enemies
     for enemy in list_enemies:
         enemy.draw(screen)
     
@@ -95,7 +114,7 @@ while running:
         enemy.update()
         #*print(enemy.energy)
 
-    # Dibujar balas
+    # Draw bullets
     for bullet in group_bullets:
         bullet.draw(screen)
         damage, pos_damage = bullet.update(list_enemies)
@@ -103,10 +122,12 @@ while running:
             damage_text = DamageText(pos_damage.centerx, pos_damage.centery, str(damage), font, cons.COLOR_GREEN)
             group_damage_text.add(damage_text)
     
+    life_player()
+    
     group_damage_text.update()
     group_damage_text.draw(screen)
 
-    # Movimiento del jugador
+    # Player movement
     delta_x = 0
     delta_y = 0
 
@@ -125,7 +146,7 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-        # Detectar teclas para movimiento
+        # Detect keys for movement
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
                 move_left = True
@@ -146,7 +167,7 @@ while running:
             if event.key == pygame.K_DOWN:
                 move_down = False
         
-        # Disparar con el clic del mouse
+        # Shoot with mouse click
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = pygame.mouse.get_pos()
             bullet = Bullet(image_bullet, player.shape.centerx, player.shape.centery, mouse_x, mouse_y)
