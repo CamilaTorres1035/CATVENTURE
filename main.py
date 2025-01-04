@@ -2,7 +2,20 @@ import pygame
 import cons
 from character import Character
 from weapon import Bullet
+import os
 
+# Funciones
+def scale_img(image, scale):
+    w = image.get_width()
+    h = image.get_height()
+    image_scaled = pygame.transform.scale(image, (w*scale, h*scale))
+    return image_scaled
+
+def count_elements(directory):
+    return len(os.listdir(directory))
+
+def list_elements(directory):
+    return os.listdir(directory)
 
 # Inicializar el juego
 pygame.init()
@@ -10,12 +23,6 @@ pygame.init()
 # Configuración de pantalla
 pygame.display.set_caption('My First Game')
 screen = pygame.display.set_mode((cons.WIDTH, cons.HEIGHT))
-
-def scale_img(image, scale):
-    w = image.get_width()
-    h = image.get_height()
-    image_scaled = pygame.transform.scale(image, (w*scale, h*scale))
-    return image_scaled
 
 # Configurar jugador
 animations = []
@@ -26,8 +33,30 @@ for i in range(1, 11):
 
 player = Character(50, 50, animations)
 
+# Configurar enemigos
+directory_enemies = 'assets//images//characters//enemies'
+type_enemies = list_elements(directory_enemies)
+
+animations_enemies = []
+for enemy in type_enemies:
+    list_temp = []
+    ruta_temp = f'assets//images//characters//enemies//{enemy}'
+    num_animations = count_elements(ruta_temp)
+    for i in range(num_animations):
+        img_enemy = pygame.image.load(f'{ruta_temp}//{enemy}-{i+1}.png')
+        img_enemy = scale_img(img_enemy, cons.SCALE_ENEMY)
+        list_temp.append(img_enemy)
+    animations_enemies.append(list_temp)
+
+Bird = Character(400, 300, animations_enemies[0])
+Dog = Character(200, 300, animations_enemies[1])
+
+list_enemies = []
+list_enemies.append(Bird)
+list_enemies.append(Dog)
+
 # Configurar imagen de bala
-image_bullet = pygame.image.load(f'assets//images//weapons//bullet.png')
+image_bullet = pygame.image.load('assets//images//weapons//bullet.png')
 image_bullet = scale_img(image_bullet, cons.SCALE_BULLET)
 
 # Grupo de balas
@@ -51,6 +80,11 @@ while running:
     # Dibujar jugador
     player.draw(screen)
     player.update()
+    
+    # Dibujar enemigos
+    for enemy in list_enemies:
+        enemy.draw(screen)
+        enemy.update()
 
     # Dibujar balas
     for bullet in group_bullets:
