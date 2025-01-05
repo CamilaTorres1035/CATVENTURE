@@ -3,6 +3,7 @@ import cons
 
 class Character():
     def __init__(self, x, y, animations, energy):
+        self.score = 0
         self.energy = energy
         self.alive = True
         self.flip = False

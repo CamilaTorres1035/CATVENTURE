@@ -55,9 +55,11 @@ group_items = pygame.sprite.Group()
 
 coin = Item(350, 25, 0, coin_images)
 heart = Item(380, 38, 1, heart_images)
+heart2 = Item(400, 38, 1, heart_images)
 
 group_items.add(coin)
 group_items.add(heart)
+group_items.add(heart2)
 
 # Text
 font = pygame.font.Font('assets//fonts//ThaleahFat.ttf', 25)
@@ -65,6 +67,10 @@ font = pygame.font.Font('assets//fonts//ThaleahFat.ttf', 25)
 group_damage_text = pygame.sprite.Group()
 
 # Configure player
+def draw_score(text, font, color, x, y):
+    img = font.render(text, True, color)
+    screen.blit(img, (x, y))
+
 def life_player():
     h_half_drawn = False
     for i in range(5):
@@ -82,7 +88,7 @@ for i in range(1, 11):
     img = scale_img(img, cons.SCALE_CHAR)
     animations.append(img)
 
-player = Character(50, 50, animations, 100)
+player = Character(50, 50, animations, 20)
 
 # Configure enemies
 directory_enemies = 'assets//images//characters//enemies'
@@ -149,11 +155,12 @@ while running:
             group_damage_text.add(damage_text)
     
     life_player()
+    draw_score(f'Score: {player.score}', font, (0,0,0), 700, 5)
     
     group_damage_text.update()
     group_damage_text.draw(screen)
     
-    group_items.update()
+    group_items.update(player)
     group_items.draw(screen)
 
     # Player movement
