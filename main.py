@@ -3,6 +3,7 @@ import cons
 from character import Character
 from weapon import Bullet
 from texts import DamageText
+from items import Item
 import os
 
 # Functions
@@ -32,6 +33,31 @@ heart_half = pygame.image.load('assets//images//items//Heart//Heart-2.PNG')
 heart_half = scale_img(heart_half, cons.SCALE_HEART)
 heart_empty = pygame.image.load('assets//images//items//Heart//Heart-3.PNG')
 heart_empty = scale_img(heart_empty, cons.SCALE_HEART)
+
+# Items images and group
+heart_images = []
+ruta_heart = 'assets//images//items//Heart-2'
+num_heart_images = count_elements(ruta_heart)
+for i in range(num_heart_images):
+    img = pygame.image.load(f'assets//images//items//Heart-2//Heart-{i+1}.png').convert_alpha()
+    img = scale_img(img, cons.SCALE_ITEMS)
+    heart_images.append(img)
+
+coin_images = []
+ruta_coin = 'assets//images//items//Coin'
+num_coin_images = count_elements(ruta_coin)
+for i in range(num_coin_images):
+    img = pygame.image.load(f'assets//images//items//Coin//Coin-{i+1}.png')
+    img = scale_img(img, cons.SCALE_ITEMS)
+    coin_images.append(img)
+
+group_items = pygame.sprite.Group()
+
+coin = Item(350, 25, 0, coin_images)
+heart = Item(380, 38, 1, heart_images)
+
+group_items.add(coin)
+group_items.add(heart)
 
 # Text
 font = pygame.font.Font('assets//fonts//ThaleahFat.ttf', 25)
@@ -126,6 +152,9 @@ while running:
     
     group_damage_text.update()
     group_damage_text.draw(screen)
+    
+    group_items.update()
+    group_items.draw(screen)
 
     # Player movement
     delta_x = 0
