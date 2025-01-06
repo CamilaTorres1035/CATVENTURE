@@ -2,7 +2,7 @@ import pygame
 import cons
 
 class Character():
-    def __init__(self, x, y, animations, energy):
+    def __init__(self, x, y, animations, energy, type_character):
         self.score = 0
         self.energy = energy
         self.alive = True
@@ -15,6 +15,8 @@ class Character():
         self.image = animations[self.frame_index]
         self.shape = self.image.get_rect()
         self.shape.center = (x, y)
+        self.type = type_character
+        
         
     def draw(self, screen):
         image_flip = pygame.transform.flip(self.image, self.flip, False)
@@ -37,9 +39,27 @@ class Character():
             self.frame_index = 0
         
     def movement(self, delta_x, delta_y):
+        pos_screen = [0,0]
         if delta_x < 0:
             self.flip = True
         if delta_x > 0:
             self.flip = False
         self.shape.x = self.shape.x + delta_x
         self.shape.y = self.shape.y + delta_y
+        
+        # Player (1)
+        if self.type == 1:
+            if self.shape.right > (cons.WIDTH - cons.lim_screen):
+                pos_screen[0] = (cons.WIDTH - cons.lim_screen) - self.shape.right
+                self.shape.right = cons.WIDTH - cons.lim_screen
+            if self.shape.left < cons.lim_screen:
+                pos_screen[0] = cons.lim_screen - self.shape.left
+                self.shape.left = cons.lim_screen
+            if self.shape.bottom > (cons.HEIGHT - cons.lim_screen):
+                pos_screen[1] = (cons.HEIGHT - cons.lim_screen) - self.shape.bottom
+                self.shape.bottom = cons.HEIGHT - cons.lim_screen
+            if self.shape.top < cons.lim_screen:
+                pos_screen[1] = cons.lim_screen - self.shape.top
+                self.shape.top = cons.lim_screen
+        
+        return pos_screen

@@ -4,13 +4,14 @@ WIDTH, HEIGHT = 800, 600
 #WIDTH_CHARACTER = 20
 SCALE_CHAR = 4
 SCALE_ENEMY = 2
-SCALE_BULLET = 0.2
+SCALE_BULLET = 0.2                                                                                          
 SCALE_HEART = 2.5
 SCALE_ITEMS = 2
 TILE_SIZE = 40
-TILE_TYPES = 76
+TILE_TYPES = 220
 ROWS = 30
 COLUMS = 40
+lim_screen = 100
 
 # Colors
 COLOR_YELLOW = (255, 255, 0)

@@ -33,6 +33,8 @@ for i in range(3):
     img = pygame.transform.scale(img, (cons.WIDTH, cons.HEIGHT))
     BackGround.append(img)
 
+pos_screen = [0,0]
+
 # Status Images
 heart_full = pygame.image.load('assets//images//items//Heart//Heart-1.PNG')
 heart_full = scale_img(heart_full, cons.SCALE_HEART)
@@ -122,7 +124,7 @@ for i in range(1, 11):
     img = scale_img(img, cons.SCALE_CHAR)
     animations.append(img)
 
-player = Character(50, 50, animations, 20)
+player = Character(80, 320, animations, 20, 1)
 
 # Configure enemies
 directory_enemies = 'assets//images//characters//enemies'
@@ -139,8 +141,8 @@ for enemy in type_enemies:
         list_temp.append(img_enemy)
     animations_enemies.append(list_temp)
 
-Bird = Character(400, 320, animations_enemies[0], 100)
-Dog = Character(200, 280, animations_enemies[1], 100)
+Bird = Character(400, 320, animations_enemies[0], 100, 2)
+Dog = Character(200, 280, animations_enemies[1], 100, 2)
 
 list_enemies = []
 list_enemies.append(Bird)
@@ -172,6 +174,7 @@ while running:
     
     draw_grid()
     world.draw(screen)
+    world.update(pos_screen)
 
     # Draw player
     player.draw(screen)
@@ -215,7 +218,7 @@ while running:
     if move_down:
         delta_y = cons.SPEED
 
-    player.movement(delta_x, delta_y)
+    pos_screen = player.movement(delta_x, delta_y)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:

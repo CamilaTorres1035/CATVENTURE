@@ -19,3 +19,9 @@ class World():
     def draw(self, surface):
         for tile in self.map_tiles:
             surface.blit(tile[0], tile[1])
+    
+    def update(self, pos_screen):
+        for tile in self.map_tiles:
+            tile[2] += pos_screen[0]
+            tile[3] += pos_screen[1]
+            tile[1].center = (tile[2], tile[3])
