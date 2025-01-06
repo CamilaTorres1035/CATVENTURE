@@ -4,6 +4,8 @@ from character import Character
 from weapon import Bullet
 from texts import DamageText
 from items import Item
+from world import World
+import csv
 import os
 
 # Functions
@@ -25,6 +27,11 @@ pygame.init()
 # Screen configuration
 pygame.display.set_caption('My First Game')
 screen = pygame.display.set_mode((cons.WIDTH, cons.HEIGHT))
+BackGround = []
+for i in range(3):
+    img = pygame.image.load(f'assets/images/backround/background-{i+1}.png')
+    img = pygame.transform.scale(img, (cons.WIDTH, cons.HEIGHT))
+    BackGround.append(img)
 
 # Status Images
 heart_full = pygame.image.load('assets//images//items//Heart//Heart-1.PNG')
@@ -66,6 +73,33 @@ font = pygame.font.Font('assets//fonts//ThaleahFat.ttf', 25)
 
 group_damage_text = pygame.sprite.Group()
 
+World_data = []
+
+for row in range(cons.ROWS):
+    rows = [7] * cons.COLUMS
+    World_data.append(rows)
+
+with open('levels//map-1.csv', newline='') as csvfile:
+    reader = csv.reader(csvfile, delimiter=';')
+    for x, row in enumerate(reader):
+        for y, column in enumerate(row):
+            World_data[x][y] = int(column)
+
+tile_list = []
+for x in range(cons.TILE_TYPES):
+    tile_image = pygame.image.load(f'assets//images//tiles//tile ({x+1}).png')
+    tile_image = pygame.transform.scale(tile_image, (cons.TILE_SIZE, cons.TILE_SIZE))
+    tile_list.append(tile_image)
+
+world = World()
+world.process_data(World_data, tile_list)
+
+# Grid
+def draw_grid():
+    for x in range(30):
+        pygame.draw.line(screen, cons.COLOR_WHITE, (x*cons.TILE_SIZE, 0), (x*cons.TILE_SIZE, cons.HEIGHT))
+        pygame.draw.line(screen, cons.COLOR_WHITE, (0, x*cons.TILE_SIZE), (cons.WIDTH, x*cons.TILE_SIZE))
+
 # Configure player
 def draw_score(text, font, color, x, y):
     img = font.render(text, True, color)
@@ -105,8 +139,8 @@ for enemy in type_enemies:
         list_temp.append(img_enemy)
     animations_enemies.append(list_temp)
 
-Bird = Character(400, 300, animations_enemies[0], 100)
-Dog = Character(200, 300, animations_enemies[1], 100)
+Bird = Character(400, 320, animations_enemies[0], 100)
+Dog = Character(200, 280, animations_enemies[1], 100)
 
 list_enemies = []
 list_enemies.append(Bird)
@@ -132,7 +166,12 @@ running = True
 
 while running:
     clock.tick(cons.FPS)
-    screen.fill(cons.COLOR_BG)
+    screen.fill(cons.COLOR_WHITE)
+    for BG in BackGround:
+        screen.blit(BG, (0,0))
+    
+    draw_grid()
+    world.draw(screen)
 
     # Draw player
     player.draw(screen)

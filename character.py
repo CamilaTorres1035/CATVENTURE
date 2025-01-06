@@ -28,7 +28,7 @@ class Character():
             self.alive = False
         
         # time of animation
-        cooldown_animation = 100
+        cooldown_animation = 80
         self.image = self.animations[self.frame_index]
         if pygame.time.get_ticks() - self.update_time >= cooldown_animation:
             self.frame_index = self.frame_index + 1
