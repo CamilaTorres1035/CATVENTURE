@@ -10,15 +10,18 @@ import os
 
 # Functions
 def scale_img(image, scale):
+    """Scale an image by a given factor."""
     w = image.get_width()
     h = image.get_height()
     image_scaled = pygame.transform.scale(image, (w*scale, h*scale))
     return image_scaled
 
 def count_elements(directory):
+    """Count the number of elements in a directory."""
     return len(os.listdir(directory))
 
 def list_elements(directory):
+    """List the elements in a directory."""
     return os.listdir(directory)
 
 # Initialize the game
@@ -27,15 +30,17 @@ pygame.init()
 # Screen configuration
 pygame.display.set_caption('My First Game')
 screen = pygame.display.set_mode((cons.WIDTH, cons.HEIGHT))
+
+# Load background images
 BackGround = []
 for i in range(3):
     img = pygame.image.load(f'assets/images/backround/background-{i+1}.png')
     img = pygame.transform.scale(img, (cons.WIDTH, cons.HEIGHT))
     BackGround.append(img)
 
-pos_screen = [0,0]
+pos_screen = [0, 0]
 
-# Status Images
+# Load status images
 heart_full = pygame.image.load('assets//images//items//Heart//Heart-1.PNG')
 heart_full = scale_img(heart_full, cons.SCALE_HEART)
 heart_half = pygame.image.load('assets//images//items//Heart//Heart-2.PNG')
@@ -43,7 +48,7 @@ heart_half = scale_img(heart_half, cons.SCALE_HEART)
 heart_empty = pygame.image.load('assets//images//items//Heart//Heart-3.PNG')
 heart_empty = scale_img(heart_empty, cons.SCALE_HEART)
 
-# Items images and group
+# Load item images and create item group
 heart_images = []
 ruta_heart = 'assets//images//items//Heart-2'
 num_heart_images = count_elements(ruta_heart)
@@ -61,22 +66,21 @@ for i in range(num_coin_images):
     coin_images.append(img)
 
 group_items = pygame.sprite.Group()
-
-coin = Item(350, 325, 0, coin_images)
-heart = Item(380, 338, 1, heart_images)
-heart2 = Item(400, 438, 1, heart_images)
-
+coin = Item(350, 25, 0, coin_images)
+heart = Item(380, 38, 1, heart_images)
+heart2 = Item(400, 38, 1, heart_images)
 group_items.add(coin)
 group_items.add(heart)
 group_items.add(heart2)
 
-# Text
+# Load font for text
 font = pygame.font.Font('assets//fonts//ThaleahFat.ttf', 25)
 
+# Create group for damage text
 group_damage_text = pygame.sprite.Group()
 
+# Load world data from CSV
 World_data = []
-
 for row in range(cons.ROWS):
     rows = [7] * cons.COLUMS
     World_data.append(rows)
@@ -87,27 +91,33 @@ with open('levels//map-1.csv', newline='') as csvfile:
         for y, column in enumerate(row):
             World_data[x][y] = int(column)
 
+# Load tile images
 tile_list = []
 for x in range(cons.TILE_TYPES):
     tile_image = pygame.image.load(f'assets//images//tiles//tile ({x+1}).png')
     tile_image = pygame.transform.scale(tile_image, (cons.TILE_SIZE, cons.TILE_SIZE))
     tile_list.append(tile_image)
 
+# Create world
 world = World()
 world.process_data(World_data, tile_list)
 
-# Grid
+# Function to draw grid
 def draw_grid():
+    """Draw a grid on the screen."""
     for x in range(30):
         pygame.draw.line(screen, cons.COLOR_WHITE, (x*cons.TILE_SIZE, 0), (x*cons.TILE_SIZE, cons.HEIGHT))
         pygame.draw.line(screen, cons.COLOR_WHITE, (0, x*cons.TILE_SIZE), (cons.WIDTH, x*cons.TILE_SIZE))
 
-# Configure player
+# Function to draw score
 def draw_score(text, font, color, x, y):
+    """Draw the score on the screen."""
     img = font.render(text, True, color)
     screen.blit(img, (x, y))
 
+# Function to draw player's life
 def life_player():
+    """Draw the player's life on the screen."""
     h_half_drawn = False
     for i in range(5):
         if player.energy >= ((i+1)*20):
@@ -118,18 +128,19 @@ def life_player():
         else:
             screen.blit(heart_empty, (5+i*50, 5))
 
+# Load player animations
 animations = []
 for i in range(1, 11):
     img = pygame.image.load(f'assets//images//characters//Cat//Cat-{i}.png')
     img = scale_img(img, cons.SCALE_CHAR)
     animations.append(img)
 
+# Create player
 player = Character(80, 320, animations, 20, 1)
 
-# Configure enemies
+# Load enemy animations
 directory_enemies = 'assets//images//characters//enemies'
 type_enemies = list_elements(directory_enemies)
-
 animations_enemies = []
 for enemy in type_enemies:
     list_temp = []
@@ -141,36 +152,34 @@ for enemy in type_enemies:
         list_temp.append(img_enemy)
     animations_enemies.append(list_temp)
 
+# Create enemies
 Bird = Character(400, 320, animations_enemies[0], 100, 2)
 Dog = Character(200, 280, animations_enemies[1], 100, 2)
+list_enemies = [Bird, Dog]
 
-list_enemies = []
-list_enemies.append(Bird)
-list_enemies.append(Dog)
-
-# Configure bullet image
+# Load bullet image
 image_bullet = pygame.image.load('assets//images//weapons//bullet.png')
 image_bullet = scale_img(image_bullet, cons.SCALE_BULLET)
 
-# Bullet group
+# Create bullet group
 group_bullets = pygame.sprite.Group()
 
 # Frame rate control
 clock = pygame.time.Clock()
 
-# Player movement
+# Player movement flags
 move_right = False
 move_left = False
 move_up = False
 move_down = False
 
+# Main game loop
 running = True
-
 while running:
     clock.tick(cons.FPS)
     screen.fill(cons.COLOR_WHITE)
     for BG in BackGround:
-        screen.blit(BG, (0,0))
+        screen.blit(BG, (0, 0))
     
     draw_grid()
     world.draw(screen)
@@ -198,9 +207,9 @@ while running:
             group_damage_text.add(damage_text)
     
     life_player()
-    draw_score(f'Score: {player.score}', font, (0,0,0), 700, 5)
+    draw_score(f'Score: {player.score}', font, (0, 0, 0), 700, 5)
     
-    group_damage_text.update(pos_screen)
+    group_damage_text.update()
     group_damage_text.draw(screen)
     
     group_items.update(pos_screen, player)
