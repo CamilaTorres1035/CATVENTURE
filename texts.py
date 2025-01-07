@@ -8,7 +8,11 @@ class DamageText(pygame.sprite.Sprite):
         self.rect.center = (x, y)
         self.cont = 0
     
-    def update(self):
+    def update(self, pos_screen):
+        # reposicionar item en pantalla
+        self.rect.x += pos_screen[0]
+        self.rect.y += pos_screen[1]
+        
         self.rect.y -= 2
         self.cont += 1
         if self.cont > 50:

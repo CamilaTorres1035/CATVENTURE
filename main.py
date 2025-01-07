@@ -62,9 +62,9 @@ for i in range(num_coin_images):
 
 group_items = pygame.sprite.Group()
 
-coin = Item(350, 25, 0, coin_images)
-heart = Item(380, 38, 1, heart_images)
-heart2 = Item(400, 38, 1, heart_images)
+coin = Item(350, 325, 0, coin_images)
+heart = Item(380, 338, 1, heart_images)
+heart2 = Item(400, 438, 1, heart_images)
 
 group_items.add(coin)
 group_items.add(heart)
@@ -182,6 +182,7 @@ while running:
     
     # Draw enemies
     for enemy in list_enemies:
+        enemy.enemies(pos_screen)
         enemy.draw(screen)
     
     for enemy in list_enemies:
@@ -199,10 +200,10 @@ while running:
     life_player()
     draw_score(f'Score: {player.score}', font, (0,0,0), 700, 5)
     
-    group_damage_text.update()
+    group_damage_text.update(pos_screen)
     group_damage_text.draw(screen)
     
-    group_items.update(player)
+    group_items.update(pos_screen, player)
     group_items.draw(screen)
 
     # Player movement

@@ -23,6 +23,11 @@ class Character():
         screen.blit(image_flip, self.shape)
         #*pygame.draw.rect(screen, cons.COLOR_CHARACTER, self.shape, width=1)
     
+    def enemies(self, pos_screen):
+        # reposicionar item en pantalla
+        self.shape.x += pos_screen[0]
+        self.shape.y += pos_screen[1]
+    
     def update(self):
         # Check if the character is still alive
         if self.energy <= 0:
