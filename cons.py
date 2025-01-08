@@ -3,7 +3,7 @@ WIDTH, HEIGHT = 800, 600
 #HEIGHT_CHARACTER = 20
 #WIDTH_CHARACTER = 20
 SCALE_CHAR = 4
-SCALE_ENEMY = 2
+SCALE_ENEMY = 1.5
 SCALE_BULLET = 0.2                                                                                          
 SCALE_HEART = 2.5
 SCALE_ITEMS = 2
@@ -18,6 +18,7 @@ COLOR_YELLOW = (255, 255, 0)
 COLOR_GREEN = (25, 234, 15)
 COLOR_BG = (100, 100, 255)
 COLOR_WHITE = (255, 255, 255)
+COLOR_BLACK = (0, 0, 0)
 
 # Others
 FPS = 60

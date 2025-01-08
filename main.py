@@ -24,6 +24,12 @@ def list_elements(directory):
     """List the elements in a directory."""
     return os.listdir(directory)
 
+# Function to draw score
+def draw_text(text, font, color, x, y):
+    """Draw the score on the screen."""
+    img = font.render(text, True, color)
+    screen.blit(img, (x, y))
+
 # Initialize the game
 pygame.init()
 
@@ -39,6 +45,7 @@ for i in range(3):
     BackGround.append(img)
 
 pos_screen = [0, 0]
+level = 1
 
 # Load status images
 heart_full = pygame.image.load('assets//images//items//Heart//Heart-1.PNG')
@@ -65,13 +72,10 @@ for i in range(num_coin_images):
     img = scale_img(img, cons.SCALE_ITEMS)
     coin_images.append(img)
 
+item_images = [coin_images, heart_images]
+
 group_items = pygame.sprite.Group()
-coin = Item(350, 25, 0, coin_images)
-heart = Item(380, 38, 1, heart_images)
-heart2 = Item(400, 38, 1, heart_images)
-group_items.add(coin)
-group_items.add(heart)
-group_items.add(heart2)
+
 
 # Load font for text
 font = pygame.font.Font('assets//fonts//ThaleahFat.ttf', 25)
@@ -86,7 +90,7 @@ for row in range(cons.ROWS):
     World_data.append(rows)
 
 with open('levels//map-1.csv', newline='') as csvfile:
-    reader = csv.reader(csvfile, delimiter=';')
+    reader = csv.reader(csvfile, delimiter=',')
     for x, row in enumerate(reader):
         for y, column in enumerate(row):
             World_data[x][y] = int(column)
@@ -98,9 +102,6 @@ for x in range(cons.TILE_TYPES):
     tile_image = pygame.transform.scale(tile_image, (cons.TILE_SIZE, cons.TILE_SIZE))
     tile_list.append(tile_image)
 
-# Create world
-world = World()
-world.process_data(World_data, tile_list)
 
 # Function to draw grid
 def draw_grid():
@@ -109,11 +110,6 @@ def draw_grid():
         pygame.draw.line(screen, cons.COLOR_WHITE, (x*cons.TILE_SIZE, 0), (x*cons.TILE_SIZE, cons.HEIGHT))
         pygame.draw.line(screen, cons.COLOR_WHITE, (0, x*cons.TILE_SIZE), (cons.WIDTH, x*cons.TILE_SIZE))
 
-# Function to draw score
-def draw_score(text, font, color, x, y):
-    """Draw the score on the screen."""
-    img = font.render(text, True, color)
-    screen.blit(img, (x, y))
 
 # Function to draw player's life
 def life_player():
@@ -152,10 +148,19 @@ for enemy in type_enemies:
         list_temp.append(img_enemy)
     animations_enemies.append(list_temp)
 
-# Create enemies
-Bird = Character(400, 320, animations_enemies[0], 100, 2)
-Dog = Character(200, 280, animations_enemies[1], 100, 2)
-list_enemies = [Bird, Dog]
+list_enemies = []
+
+# Create world
+world = World()
+world.process_data(World_data, tile_list, item_images, animations_enemies)
+
+# Add items to group
+for item in world.item_list:
+    group_items.add(item)
+
+# Add enemies to list
+for enemy in world.enemy_list:
+    list_enemies.append(enemy)
 
 # Load bullet image
 image_bullet = pygame.image.load('assets//images//weapons//bullet.png')
@@ -207,11 +212,14 @@ while running:
             group_damage_text.add(damage_text)
     
     life_player()
-    draw_score(f'Score: {player.score}', font, (0, 0, 0), 700, 5)
+    draw_text(f'Score: {player.score}', font, cons.COLOR_BLACK, 700, 5)
     
-    group_damage_text.update()
+    draw_text(f'Level: {level}', font, cons.COLOR_BLACK, cons.WIDTH/2, 5)
+    
+    group_damage_text.update(pos_screen)
     group_damage_text.draw(screen)
     
+    # Draw items
     group_items.update(pos_screen, player)
     group_items.draw(screen)
 
@@ -228,7 +236,7 @@ while running:
     if move_down:
         delta_y = cons.SPEED
 
-    pos_screen = player.movement(delta_x, delta_y)
+    pos_screen = player.movement(delta_x, delta_y, world.obstacles)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
