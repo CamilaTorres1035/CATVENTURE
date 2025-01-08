@@ -21,7 +21,6 @@ class Character():
     def draw(self, screen):
         image_flip = pygame.transform.flip(self.image, self.flip, False)
         screen.blit(image_flip, self.shape)
-        #*pygame.draw.rect(screen, cons.COLOR_CHARACTER, self.shape, width=1)
     
     def enemies(self, pos_screen):
         # reposicionar item en pantalla
@@ -49,6 +48,7 @@ class Character():
             self.flip = True
         if delta_x > 0:
             self.flip = False
+
         self.shape.x = self.shape.x + delta_x
         for obstacle in obstacles:
             if obstacle[1].colliderect(self.shape):
