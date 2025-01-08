@@ -132,7 +132,7 @@ for i in range(1, 11):
     animations.append(img)
 
 # Create player
-player = Character(80, 320, animations, 20, 1)
+player = Character(200, 200, animations, 20, 1)
 
 # Load enemy animations
 directory_enemies = 'assets//images//characters//enemies'
