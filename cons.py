@@ -25,3 +25,7 @@ FPS = 60
 SPEED = 10
 SPEED_BULLET = 20
 SHOT_COOLDOWN = 500
+GRAVITY = 2  # Valor más alto que 1 para aumentar la velocidad de caída
+TERMINAL_VELOCITY = 20  # Aumenta este valor para permitir caídas más rápidas
+JUMP_HEIGHT = -12  # Reduce el valor absoluto para un salto más rápido y bajo
+

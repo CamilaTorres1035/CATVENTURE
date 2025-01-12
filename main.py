@@ -201,7 +201,6 @@ while running:
     
     for enemy in list_enemies:
         enemy.update()
-        #*print(enemy.energy)
 
     # Draw bullets
     for bullet in group_bullets:
@@ -225,18 +224,13 @@ while running:
 
     # Player movement
     delta_x = 0
-    delta_y = 0
 
     if move_right:
         delta_x = cons.SPEED
     if move_left:
         delta_x = -cons.SPEED
-    if move_up:
-        delta_y = -cons.SPEED
-    if move_down:
-        delta_y = cons.SPEED
 
-    pos_screen = player.movement(delta_x, delta_y, world.obstacles)
+    pos_screen = player.movement(delta_x, world.obstacles)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -249,20 +243,14 @@ while running:
             if event.key == pygame.K_RIGHT:
                 move_right = True
             if event.key == pygame.K_UP:
-                move_up = True
-            if event.key == pygame.K_DOWN:
-                move_down = True
+                player.perform_jump()
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT:
                 move_left = False
             if event.key == pygame.K_RIGHT:
                 move_right = False
-            if event.key == pygame.K_UP:
-                move_up = False
-            if event.key == pygame.K_DOWN:
-                move_down = False
-        
+
         # Shoot with mouse click
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = pygame.mouse.get_pos()

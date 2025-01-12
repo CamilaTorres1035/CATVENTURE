@@ -8,33 +8,33 @@ class Character():
         self.alive = True
         self.flip = False
         self.animations = animations
-        # image of actual animation
         self.frame_index = 0
-        
         self.update_time = pygame.time.get_ticks()
         self.image = animations[self.frame_index]
         self.shape = self.image.get_rect()
         self.shape.center = (x, y)
         self.type = type_character
-        
-        
+        self.vel_y = 0
+        self.jump = False
+        self.in_air = True
+
     def draw(self, screen):
+        # Flip the image if needed and draw it on the screen
         image_flip = pygame.transform.flip(self.image, self.flip, False)
         screen.blit(image_flip, self.shape)
-        #*pygame.draw.rect(screen, cons.COLOR_CHARACTER, self.shape, width=1)
-    
+
     def enemies(self, pos_screen):
-        # reposicionar item en pantalla
+        # Update the character's position based on the screen position
         self.shape.x += pos_screen[0]
         self.shape.y += pos_screen[1]
-    
+
     def update(self):
-        # Check if the character is still alive
+        # Check if the character is alive
         if self.energy <= 0:
             self.energy = 0
             self.alive = False
-        
-        # time of animation
+
+        # Animation cooldown
         cooldown_animation = 80
         self.image = self.animations[self.frame_index]
         if pygame.time.get_ticks() - self.update_time >= cooldown_animation:
@@ -42,14 +42,16 @@ class Character():
             self.update_time = pygame.time.get_ticks()
         if self.frame_index >= len(self.animations):
             self.frame_index = 0
-        
-    def movement(self, delta_x, delta_y, obstacles):
-        pos_screen = [0,0]
+
+    def movement(self, delta_x, obstacles):
+        pos_screen = [0, 0]
         if delta_x < 0:
             self.flip = True
         if delta_x > 0:
             self.flip = False
-        self.shape.x = self.shape.x + delta_x
+
+        # Horizontal movement
+        self.shape.x += delta_x
         for obstacle in obstacles:
             if obstacle[1].colliderect(self.shape):
                 if delta_x > 0:
@@ -57,15 +59,31 @@ class Character():
                 if delta_x < 0:
                     self.shape.left = obstacle[1].right
 
-        self.shape.y = self.shape.y + delta_y
+        # Increase vertical velocity due to gravity
+        if self.vel_y > 0:  # If falling
+            self.vel_y += cons.GRAVITY * 1.5  # Multiplier for fast fall
+        else:  # If rising or at rest
+            self.vel_y += cons.GRAVITY
+
+        # Limit terminal velocity
+        if self.vel_y > cons.TERMINAL_VELOCITY:
+            self.vel_y = cons.TERMINAL_VELOCITY
+
+        # Update vertical position
+        self.shape.y += self.vel_y
+
+        # Check vertical collisions
         for obstacle in obstacles:
             if obstacle[1].colliderect(self.shape):
-                if delta_y > 0:
+                if self.vel_y > 0:  # If falling
                     self.shape.bottom = obstacle[1].top
-                if delta_y < 0:
+                    self.vel_y = 0
+                    self.in_air = False
+                elif self.vel_y < 0:  # If rising
                     self.shape.top = obstacle[1].bottom
-        
-        # Player (1)
+                    self.vel_y = 0
+
+        # Adjust position at the edges of the screen
         if self.type == 1:
             if self.shape.right > (cons.WIDTH - cons.lim_screen):
                 pos_screen[0] = (cons.WIDTH - cons.lim_screen) - self.shape.right
@@ -79,5 +97,11 @@ class Character():
             if self.shape.top < cons.lim_screen:
                 pos_screen[1] = cons.lim_screen - self.shape.top
                 self.shape.top = cons.lim_screen
-        
+
         return pos_screen
+
+    def perform_jump(self):
+        # Jump control
+        if not self.in_air:
+            self.vel_y = -25  # Jump force
+            self.in_air = True
