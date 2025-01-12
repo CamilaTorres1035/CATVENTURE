@@ -11,7 +11,7 @@ TILE_SIZE = 40
 TILE_TYPES = 220
 ROWS = 30
 COLUMS = 40
-lim_screen = 100
+lim_screen = 150
 
 # Colors
 COLOR_YELLOW = (255, 255, 0)
@@ -28,4 +28,6 @@ SHOT_COOLDOWN = 500
 GRAVITY = 2  # Valor más alto que 1 para aumentar la velocidad de caída
 TERMINAL_VELOCITY = 20  # Aumenta este valor para permitir caídas más rápidas
 JUMP_HEIGHT = -12  # Reduce el valor absoluto para un salto más rápido y bajo
-
+RANGE_ATTACK = 20
+COOR_LEVELS = {'1':(200, 200), '2': (200, 200)}
+FINAL_LEVEL = 2

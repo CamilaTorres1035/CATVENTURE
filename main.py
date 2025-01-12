@@ -84,6 +84,16 @@ font = pygame.font.Font('assets//fonts//ThaleahFat.ttf', 25)
 group_damage_text = pygame.sprite.Group()
 
 # Load world data from CSV
+def reset_world():
+    group_damage_text.empty()
+    group_bullets.empty()
+    group_items.empty()
+    data = []
+    for row in range(cons.ROWS):
+        rows = [7] * cons.COLUMS
+        data.append(rows)
+    return data
+
 World_data = []
 for row in range(cons.ROWS):
     rows = [7] * cons.COLUMS
@@ -132,7 +142,7 @@ for i in range(1, 11):
     animations.append(img)
 
 # Create player
-player = Character(200, 200, animations, 20, 1)
+player = Character(200, 200, animations, 100, 1)
 
 # Load enemy animations
 directory_enemies = 'assets//images//characters//enemies'
@@ -192,10 +202,14 @@ while running:
 
     # Draw player
     player.draw(screen)
-    player.update()
+    player.update(list_enemies)
     
     # Draw enemies
     for enemy in list_enemies:
+        if enemy.alive == False:
+            player.score += 5
+            list_enemies.remove(enemy)
+            continue
         enemy.enemies(pos_screen)
         enemy.draw(screen)
     
@@ -205,13 +219,13 @@ while running:
     # Draw bullets
     for bullet in group_bullets:
         bullet.draw(screen)
-        damage, pos_damage = bullet.update(list_enemies)
+        damage, pos_damage = bullet.update(list_enemies, world.obstacles)
         if damage:
             damage_text = DamageText(pos_damage.centerx, pos_damage.centery, str(damage), font, cons.COLOR_GREEN)
             group_damage_text.add(damage_text)
     
     life_player()
-    draw_text(f'Score: {player.score}', font, cons.COLOR_BLACK, 700, 5)
+    draw_text(f'Score: {player.score}', font, cons.COLOR_BLACK, 650, 5)
     
     draw_text(f'Level: {level}', font, cons.COLOR_BLACK, cons.WIDTH/2, 5)
     
@@ -230,8 +244,27 @@ while running:
     if move_left:
         delta_x = -cons.SPEED
 
-    pos_screen = player.movement(delta_x, world.obstacles)
-
+    pos_screen, level_end = player.movement(delta_x, world.obstacles, world.exit)
+    
+    if level_end:
+        if level == cons.FINAL_LEVEL:
+            level += 1
+            World_data = reset_world()
+            with open(f'levels//map-{level}.csv', newline='') as csvfile:
+                reader = csv.reader(csvfile, delimiter=',')
+                for x, row in enumerate(reader):
+                    for y, column in enumerate(row):
+                        World_data[x][y] = int(column)
+            world = World()
+            world.process_data(World_data, tile_list, item_images, animations_enemies)
+            player.actualize_coor(cons.COOR_LEVELS[str(level)])
+            list_enemies = []
+            for enemy in world.enemy_list:
+                list_enemies.append(enemy)
+            group_items.empty()
+            for item in world.item_list:
+                group_items.add(item)
+        
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False

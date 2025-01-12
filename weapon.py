@@ -23,7 +23,7 @@ class Bullet(pygame.sprite.Sprite):
     def draw(self, screen):
         screen.blit(self.image, self.rect.topleft)
 
-    def update(self, list_enemies):
+    def update(self, list_enemies, obstacles):
         damage = 0
         pos_damage = None
         # Move bullet
@@ -41,6 +41,12 @@ class Bullet(pygame.sprite.Sprite):
                 damage = 15 + random.randint(-7, 7)
                 pos_damage = enemy.shape
                 enemy.energy = enemy.energy - damage
+                self.kill()
+                break
+        
+        # Check collision with obstacles
+        for obstacle in obstacles:
+            if obstacle[1].colliderect(self.rect):
                 self.kill()
                 break
         

@@ -17,6 +17,9 @@ class Character():
         self.vel_y = 0
         self.jump = False
         self.in_air = True
+        self.invulnerable = False
+        self.invulnerable_time = 0
+        self.invulnerable_duration = 2000  # 2 seconds of invulnerability
 
     def draw(self, screen):
         # Flip the image if needed and draw it on the screen
@@ -28,7 +31,7 @@ class Character():
         self.shape.x += pos_screen[0]
         self.shape.y += pos_screen[1]
 
-    def update(self):
+    def update(self, enemies = []):
         # Check if the character is alive
         if self.energy <= 0:
             self.energy = 0
@@ -42,8 +45,23 @@ class Character():
             self.update_time = pygame.time.get_ticks()
         if self.frame_index >= len(self.animations):
             self.frame_index = 0
+        
+        current_time = pygame.time.get_ticks()
+        if self.invulnerable and current_time - self.invulnerable_time > self.invulnerable_duration:
+            self.invulnerable = False
 
-    def movement(self, delta_x, obstacles):
+        if not self.invulnerable:
+            for enemy in enemies:
+                if self.shape.colliderect(enemy.shape):
+                    self.energy -= 20  # Reduce energy by 20 
+                    if self.energy < 0:
+                        self.energy = 0
+                    self.invulnerable = True
+                    self.invulnerable_time = current_time
+                    break
+
+    def movement(self, delta_x, obstacles, exit_tile):
+        level_end = False
         pos_screen = [0, 0]
         if delta_x < 0:
             self.flip = True
@@ -85,6 +103,9 @@ class Character():
 
         # Adjust position at the edges of the screen
         if self.type == 1:
+            if exit_tile[1].colliderect(self.shape):
+                level_end = True
+                print('Nivel completado')
             if self.shape.right > (cons.WIDTH - cons.lim_screen):
                 pos_screen[0] = (cons.WIDTH - cons.lim_screen) - self.shape.right
                 self.shape.right = cons.WIDTH - cons.lim_screen
@@ -98,10 +119,13 @@ class Character():
                 pos_screen[1] = cons.lim_screen - self.shape.top
                 self.shape.top = cons.lim_screen
 
-        return pos_screen
+        return pos_screen, level_end
+    
+    def actualize_coor(self, pos_screen):
+        self.shape.center = (pos_screen[0], pos_screen[1])
 
     def perform_jump(self):
         # Jump control
         if not self.in_air:
             self.vel_y = -25  # Jump force
-            self.in_air = True
+            self.in_air = True 
