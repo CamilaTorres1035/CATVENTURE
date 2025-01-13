@@ -30,5 +30,5 @@ GRAVITY = 2  # Valor más alto que 1 para aumentar la velocidad de caída
 TERMINAL_VELOCITY = 20  # Aumenta este valor para permitir caídas más rápidas
 JUMP_HEIGHT = -12  # Reduce el valor absoluto para un salto más rápido y bajo
 RANGE_ATTACK = 20
-COOR_LEVELS = {'1':(200, 200), '2': (200, 200)}
-FINAL_LEVEL = 2
+COOR_LEVELS = {'1':(200, 200), '2': (200, 200), '3': (100, 50), '4': (150, 700)}
+FINAL_LEVEL = 4

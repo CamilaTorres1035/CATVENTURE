@@ -13,7 +13,7 @@ class World():
         self.item_list = []
         self.enemy_list = []
     
-    def process_data(self, data, tile_list, item_images, character_images):
+    def process_data(self, data, tile_list, item_images, character_images, level):
         self.level_len = len(data)
         for y, row in enumerate(data):
             for x, tile in enumerate(row):
@@ -31,18 +31,26 @@ class World():
                     coin = Item(image_x, image_y, 0, item_images[0])
                     self.item_list.append(coin)
                     tile_data[0] = tile_list[-1]
+                    if level == 4:
+                        tile_data[0] = tile_list[122]
                 elif tile == 178:
                     heart = Item(image_x, image_y, 1, item_images[1])
                     self.item_list.append(heart)
                     tile_data[0] = tile_list[-1]
+                    if level == 4:
+                        tile_data[0] = tile_list[122]
                 elif tile == 210:
                     Bird = Character(image_x, image_y, character_images[0], 100, 2)
                     self.enemy_list.append(Bird)
                     tile_data[0] = tile_list[-1]
+                    if level == 4:
+                        tile_data[0] = tile_list[122]
                 elif tile == 169:
                     Dog = Character(image_x, image_y, character_images[1], 100, 2)
                     self.enemy_list.append(Dog)
                     tile_data[0] = tile_list[-1]
+                    if level == 4:
+                        tile_data[0] = tile_list[122]
                 self.map_tiles.append(tile_data)
     
     def draw(self, surface):

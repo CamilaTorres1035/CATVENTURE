@@ -204,7 +204,7 @@ list_enemies = []
 
 # Create world
 world = World()
-world.process_data(World_data, tile_list, item_images, animations_enemies)
+world.process_data(World_data, tile_list, item_images, animations_enemies, level)
 
 # Add items to group
 for item in world.item_list:
@@ -328,7 +328,7 @@ while running:
                         for y, column in enumerate(row):
                             World_data[x][y] = int(column)
                 world = World()
-                world.process_data(World_data, tile_list, item_images, animations_enemies)
+                world.process_data(World_data, tile_list, item_images, animations_enemies, level)
                 player.actualize_coor(cons.COOR_LEVELS[str(level)])
                 list_enemies = []
                 for enemy in world.enemy_list:
@@ -383,7 +383,7 @@ while running:
                         for y, column in enumerate(row):
                             World_data[x][y] = int(column)
                 world = World()
-                world.process_data(World_data, tile_list, item_images, animations_enemies)
+                world.process_data(World_data, tile_list, item_images, animations_enemies, level)
                 player.actualize_coor(cons.COOR_LEVELS[str(level)])
                 list_enemies = []
                 for enemy in world.enemy_list:
