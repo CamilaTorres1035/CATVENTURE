@@ -105,7 +105,6 @@ class Character():
         if self.type == 1:
             if exit_tile[1].colliderect(self.shape):
                 level_end = True
-                print('Nivel completado')
             if self.shape.right > (cons.WIDTH - cons.lim_screen):
                 pos_screen[0] = (cons.WIDTH - cons.lim_screen) - self.shape.right
                 self.shape.right = cons.WIDTH - cons.lim_screen

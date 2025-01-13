@@ -32,6 +32,7 @@ def draw_text(text, font, color, x, y):
 
 # Initialize the game
 pygame.init()
+pygame.mixer.init()
 
 # Screen configuration
 pygame.display.set_caption('My First Game')
@@ -81,9 +82,46 @@ group_items = pygame.sprite.Group()
 font = pygame.font.Font('assets//fonts//ThaleahFat.ttf', 25)
 font_game_over = pygame.font.Font('assets//fonts//ThaleahFat.ttf', 100)
 font_restart = pygame.font.Font('assets//fonts//ThaleahFat.ttf', 30)
+font_start = pygame.font.Font('assets//fonts//ThaleahFat.ttf', 50)
+font_title = pygame.font.Font('assets//fonts//ThaleahFat.ttf', 100)
 
 game_over_text = font_game_over.render('GAME OVER', True, cons.COLOR_RED)
 restart_text = font_restart.render('Restart', True, cons.COLOR_BLACK)
+
+# Start screen
+BG_title = pygame.Rect(cons.WIDTH/2 - 240, cons.HEIGHT/2 - 200, 550, 100)
+BG_win = pygame.Rect(cons.WIDTH/2 - 240, cons.HEIGHT/2 - 200, 400, 100)
+text_start = font_start.render('Start', True, cons.COLOR_WHITE)
+text_exit = font_start.render('Exit', True, cons.COLOR_WHITE)
+play_button = pygame.Rect(cons.WIDTH/2 - 100, cons.HEIGHT/2 - 50, 200, 50)
+exit_button = pygame.Rect(cons.WIDTH/2 - 100, cons.HEIGHT/2 + 50, 200, 50)
+
+def start_screen():
+    """Draw the start screen."""
+    screen.fill(cons.COLOR_WHITE)
+    for BG in BackGround:
+        screen.blit(BG, (0, 0))
+    pygame.draw.rect(screen, cons.COLOR_BG, BG_title)
+    draw_text('CATVENTURE', font_title, cons.COLOR_YELLOW, cons.WIDTH/2 - 200, cons.HEIGHT/2 - 200)
+    pygame.draw.rect(screen, cons.COLOR_GREEN, play_button)
+    pygame.draw.rect(screen, cons.COLOR_RED, exit_button)
+    screen.blit(text_start, (play_button.x + 50, play_button.y + 5))
+    screen.blit(text_exit, (exit_button.x + 60, exit_button.y + 5))
+    pygame.display.update()
+
+# Winning screen
+def win_screen():
+    """Draw the winning screen."""
+    screen.fill(cons.COLOR_WHITE)
+    for BG in BackGround:
+        screen.blit(BG, (0, 0))
+    pygame.draw.rect(screen, cons.COLOR_BG, BG_win)
+    draw_text('YOU WIN', font_title, cons.COLOR_YELLOW, cons.WIDTH/2 - 200, cons.HEIGHT/2 - 200)
+    pygame.draw.rect(screen, cons.COLOR_GREEN, play_button)
+    pygame.draw.rect(screen, cons.COLOR_RED, exit_button)
+    screen.blit(text_start, (play_button.x + 50, play_button.y + 5))
+    screen.blit(text_exit, (exit_button.x + 60, exit_button.y + 5))
+    pygame.display.update()
 # Create group for damage text
 group_damage_text = pygame.sprite.Group()
 
@@ -193,8 +231,25 @@ move_up = False
 move_down = False
 
 # Main game loop
+pygame.mixer.music.load('assets//sounds//game-music-loop.mp3')
+pygame.mixer.music.play(-1)
+
+sound_shot = pygame.mixer.Sound('assets//sounds//game-shot.mp3')
+
+show_start_screen = True
 running = True
 while running:
+    if show_start_screen:
+        start_screen()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if play_button.collidepoint(event.pos):
+                    show_start_screen = False
+                if exit_button.collidepoint(event.pos):
+                    running = False
+        continue
     clock.tick(cons.FPS)
     screen.fill(cons.COLOR_WHITE)
     for BG in BackGround:
@@ -222,6 +277,7 @@ while running:
 
         # Draw bullets
         for bullet in group_bullets:
+            sound_shot.play()
             bullet.draw(screen)
             damage, pos_damage = bullet.update(list_enemies, world.obstacles)
             if damage:
@@ -251,6 +307,18 @@ while running:
         pos_screen, level_end = player.movement(delta_x, world.obstacles, world.exit)
         
         if level_end:
+            if player.alive and level == cons.FINAL_LEVEL:
+                win_screen()
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        running = False
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        if play_button.collidepoint(event.pos):
+                            show_start_screen = True
+                            player.alive = False
+                        if exit_button.collidepoint(event.pos):
+                            running = False
+                continue
             if level < cons.FINAL_LEVEL:
                 level += 1
                 World_data = reset_world()
@@ -268,7 +336,6 @@ while running:
                 group_items.empty()
                 for item in world.item_list:
                     group_items.add(item)
-    
     
     if player.alive == False:
         screen.fill(cons.COLOR_BLACK)
