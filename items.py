@@ -23,8 +23,8 @@ class Item(pygame.sprite.Sprite):
             # corazon
             elif self.item_type == 1:
                 player.energy += 30
-                if player.energy > 100:
-                    player.energy = 100
+                if player.energy > 102:
+                    player.energy = 102
             self.kill()
             
         

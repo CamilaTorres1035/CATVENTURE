@@ -373,7 +373,7 @@ while running:
         if event.type == pygame.MOUSEBUTTONDOWN and player.alive == False:
             if restart_button.collidepoint(event.pos) and not player.alive:
                 player.alive = True
-                player.energy = 100
+                player.energy = 102
                 player.score = 0
                 level = 1
                 World_data = reset_world()
