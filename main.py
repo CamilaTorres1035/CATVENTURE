@@ -167,10 +167,10 @@ def draw_grid():
 def life_player():
     """Draw the player's life on the screen."""
     h_half_drawn = False
-    for i in range(5):
-        if player.energy >= ((i+1)*20):
+    for i in range(3):
+        if player.energy >= ((i+1)*34):
             screen.blit(heart_full, (5+i*50, 5))
-        elif player.energy % 20 > 0 and h_half_drawn == False:
+        elif player.energy % 34 > 0 and not h_half_drawn:
             h_half_drawn = True
             screen.blit(heart_half, (5+i*50, 5))
         else:
@@ -184,7 +184,7 @@ for i in range(1, 11):
     animations.append(img)
 
 # Create player
-player = Character(200, 200, animations, 100, 1)
+player = Character(200, 200, animations, 102, 1)
 
 # Load enemy animations
 directory_enemies = 'assets//images//characters//enemies'
@@ -373,7 +373,7 @@ while running:
         if event.type == pygame.MOUSEBUTTONDOWN and player.alive == False:
             if restart_button.collidepoint(event.pos) and not player.alive:
                 player.alive = True
-                player.energy = 100
+                player.energy = 102
                 player.score = 0
                 level = 1
                 World_data = reset_world()
